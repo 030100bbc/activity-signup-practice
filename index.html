@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>活動報名（課堂作業練習）</title>
+  <!-- Bootstrap 用 CDN（固定版本 5.3.8）；網頁放 GitHub Pages／Cloudflare Pages 都能載入 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* ===== 配色：沉穩的靛藍與青綠色，呈現心理健康和學術講座氛圍 ===== */
+    :root {
+      --brand: #0d9488;       /* 沉穩青綠 */
+      --brand-dark: #1e3a8a;  /* 深邃靛藍 */
+      --soft: #f0fdfa;        /* 柔和淺青背景 */
+      --accent: #0f766e;      /* 按鈕強調色 */
+      --accent-hover: #115e59;
+    }
+    body {
+      background: #f4f7f9;
+      color: #1e293b;
+      line-height: 1.7;
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 100%);
+      color: #fff;
+    }
+    .hero .badge {
+      background: rgba(255, 255, 255, 0.2);
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+    /* 卡片圓角與清楚的層次感 */
+    .info-card {
+      border: 1px solid rgba(30, 58, 138, 0.08);
+      border-radius: 1rem;
+      background: #ffffff;
+      box-shadow: 0 0.35rem 1rem rgba(15, 23, 42, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .info-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0.5rem 1.25rem rgba(15, 23, 42, 0.08);
+    }
+    .icon-box {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 0.75rem;
+      background: var(--soft);
+      color: var(--brand-dark);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+    }
+    .agenda li {
+      padding: 0.65rem 0;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+    .agenda li:last-child {
+      border-bottom: 0;
+    }
+    .btn-brand {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      border-radius: 0.65rem;
+      font-weight: 600;
+    }
+    .btn-brand:hover, .btn-brand:focus {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #fff;
+    }
+    .hero .btn-brand {
+      background: #ffffff;
+      border-color: #ffffff;
+      color: var(--brand-dark);
+    }
+    .hero .btn-brand:hover, .hero .btn-brand:focus {
+      background: #f0fdfa;
+      border-color: #f0fdfa;
+      color: var(--brand-dark);
+    }
+    .seats {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .form-control, .form-select {
+      border-radius: 0.6rem;
+      padding: 0.65rem 0.85rem;
+    }
+    footer {
+      color: #64748b;
+    }
+    /* 醒目標示「僅課程練習用」：不能刪、不能改淡 */
+    .practice-banner {
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+      background: #b91c1c;
+      color: #fff;
+      border-bottom: 4px solid #facc15;
+    }
+    .practice-banner a {
+      color: #fde68a;
+      font-weight: 700;
+    }
+    @media (max-width: 576px) {
+      .hero {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+      }
+      .info-card {
+        padding: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  ① 填空區：活動資料已依活動資料.md 填入（照原公告，無自行編造）   ║
+// ╚══════════════════════════════════════════════════════════════╝
+// 網頁負責人：學號
+const OWNER = "112022060";
+
+const EVENT = {
+  title: "亞洲大學心理系學術研討講座",
+  subtitle: "相互依存的心理健康典範：理論基礎、神經生物學機制及文化與臨床意涵",
+  organizer: "亞洲大學心理學系",
+  date: "2026/11/24（二）",
+  time: "15:10～17:00",
+  place: "M014",
+  speaker: "Prof. Dr. Cholichul Hadi",
+  speakerTitle: "工業與組織心理學教授，印尼 Airlangga 大學心理學院",
+  intro: "亞洲大學心理系邀請印尼 Airlangga 大學心理學專家，分享相互依存心理健康典範的理論基礎、神經生物學機制，以及文化與臨床意涵。本講座全程以英文進行。",
+  agenda: [], // 公告未提供活動流程
+  sourceName: "亞洲大學國際事務處，〈亞洲大學心理系專題式工作坊暨學術研討講座〉，2026/11/24 查詢",
+  sourceUrl: "https://oia.asia.edu.tw/p/406-1008-18410,r80.php?Lang=zh-tw",
+  capacity: 50,
+  capacityNote: "名額為練習用的假設值",
+  optionLabel: "身分",
+  options: ["本系學生", "外系學生", "教職員", "校外人士"],
+};
+
+// ② 部署 Apps Script 後，把 /exec 網址貼在這裡；空白＝試玩模式
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxP9tqxwEcYWUxXsIc0HGpgIlnIRxM-MDdych2QFCSwvLUAxSJRBAbzsIXheXZERXi-/exec";
+</script>
+
+<!-- 醒目標示：僅課程練習用（不能刪；評分會看） -->
+<div id="practice-banner" class="practice-banner text-center py-3 px-3" role="alert">
+  <div class="fs-5 fw-bold">⚠️ 僅供課程練習使用，非活動正式報名網頁</div>
+  <div class="small">本頁是「網站系統建置與規劃」課堂作業，在這裡送出<strong>不會</strong>完成正式報名。正式報名請依
+  <a id="source-link-top" href="#" target="_blank" rel="noopener">原公告</a> 辦理。</div>
+</div>
+
+<header class="hero py-5">
+  <div class="container">
+    <span id="ev-organizer" class="badge rounded-pill px-3 py-2 mb-3"></span>
+    <h1 id="ev-title" class="display-6 fw-bold mb-3"></h1>
+    <p id="ev-subtitle" class="lead mb-4 opacity-90"></p>
+    <a href="#signup" class="btn btn-brand btn-lg px-4">立即報名</a>
+  </div>
+</header>
+
+<main class="container py-5">
+  <!-- 清楚的時間、地點與名額資訊區塊 -->
+  <section class="row g-3 g-md-4 mb-5">
+    <div class="col-12 col-md-4">
+      <div class="card info-card h-100 p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="icon-box me-3">📅</div>
+          <h2 class="h6 fw-bold text-uppercase text-secondary mb-0">日期時間</h2>
+        </div>
+        <p class="fs-5 fw-semibold text-dark mb-1" id="ev-date"></p>
+        <p class="fs-6 text-secondary mb-0" id="ev-time"></p>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card info-card h-100 p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="icon-box me-3">📍</div>
+          <h2 class="h6 fw-bold text-uppercase text-secondary mb-0">活動地點</h2>
+        </div>
+        <p class="fs-5 fw-semibold text-dark mb-0" id="ev-place"></p>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card info-card h-100 p-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="icon-box me-3">🎟️</div>
+          <h2 class="h6 fw-bold text-uppercase text-secondary mb-0">剩餘名額</h2>
+        </div>
+        <p class="mb-1"><span id="seats" class="seats">--</span> / <span id="capacity"></span> 位</p>
+        <p id="ev-capnote" class="small text-secondary mb-0"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 活動內容與資訊來源 -->
+  <section class="row g-4 mb-5">
+    <div class="col-lg-6">
+      <div class="card info-card h-100 p-4">
+        <h2 class="h4 fw-bold mb-3" style="color: var(--brand-dark);">活動內容</h2>
+        <div id="ev-speaker-line" class="p-3 rounded-3 mb-3" style="background: var(--soft);">
+          <div class="small text-secondary mb-1">主講人</div>
+          <strong id="ev-speaker" class="d-block fs-5 text-dark"></strong>
+          <span id="ev-speaker-title" class="small text-secondary"></span>
+        </div>
+        <p id="ev-intro" class="text-secondary mb-0"></p>
+        <ul id="ev-agenda" class="list-unstyled agenda mt-3 mb-0"></ul>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card info-card h-100 p-4">
+        <h2 class="h4 fw-bold mb-3" style="color: var(--brand-dark);">活動資訊來源</h2>
+        <ul class="list-unstyled agenda mb-0">
+          <li><strong>來源</strong>　<span id="ev-source"></span></li>
+          <li><strong>原公告</strong>　<a id="source-link" href="#" target="_blank" rel="noopener">開啟原公告</a></li>
+          <li><strong>說明</strong>　時間、地點、內容照抄原公告；本頁為課堂作業練習</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 報名表單：欄位的 id、name 不要改（Code.gs 靠它們收資料） -->
+  <section id="signup" class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card info-card p-4 p-md-5">
+        <h2 class="h4 fw-bold mb-1" style="color: var(--brand-dark);">報名表單</h2>
+        <p class="text-secondary small mb-4">標 <span class="text-danger">*</span> 的欄位必填。資料只用於本次活動聯絡，活動結束後刪除。</p>
+        <div id="demo-note" class="alert alert-warning small d-none">
+          目前是 <strong>試玩模式</strong>：還沒填 SCRIPT_URL，報名資料只存在這台電腦的瀏覽器裡。
+        </div>
+
+        <form id="form" novalidate>
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold">姓名 <span class="text-danger">*</span></label>
+            <input id="name" name="name" class="form-control" required maxlength="20" autocomplete="name">
+            <div class="invalid-feedback">請填姓名（1～20 個字）</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+            <input id="email" name="email" type="email" class="form-control" required maxlength="100"
+                   autocomplete="email" placeholder="例如 ming@example.com">
+            <div class="invalid-feedback">Email 格式不正確，例如 ming@example.com</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="identity" class="form-label fw-semibold"><span id="option-label"></span> <span class="text-danger">*</span></label>
+            <select id="identity" name="identity" class="form-select" required>
+              <option value="">請選擇</option>
+            </select>
+            <div class="invalid-feedback">請選擇一個選項</div>
+          </div>
+
+          <div class="form-check mb-4">
+            <input id="agree" name="agree" type="checkbox" class="form-check-input" required>
+            <label for="agree" class="form-check-label">我同意主辦單位將以上資料用於本次活動聯絡</label>
+            <div class="invalid-feedback">請勾選同意個人資料使用說明</div>
+          </div>
+
+          <p class="small text-danger fw-bold mb-2">※ 練習用表單：送出不代表完成正式報名</p>
+          <button id="submit" class="btn btn-brand btn-lg w-100">送出報名</button>
+          <div id="result" class="mt-3" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="text-center small py-4">
+  <div>本頁僅供「網站系統建置與規劃」課程練習，非活動正式報名網頁</div>
+  <div class="mt-1">網頁負責人：<strong id="owner"></strong></div>
+</footer>
+
+<script>
+// ===== 以下程式不用改：把 EVENT 的內容放到網頁上（一律用 textContent，避免 XSS）=====
+const $ = (id) => document.getElementById(id);
+const setText = (id, text) => { $(id).textContent = text; };
+
+document.title = EVENT.title + "｜活動報名（課堂作業練習）";
+setText("owner", OWNER);
+setText("ev-organizer", EVENT.organizer);
+setText("ev-title", EVENT.title);
+setText("ev-subtitle", EVENT.subtitle);
+setText("ev-date", EVENT.date);
+setText("ev-time", EVENT.time);
+setText("ev-place", EVENT.place);
+setText("capacity", EVENT.capacity);
+setText("ev-capnote", EVENT.capacityNote);
+setText("ev-intro", EVENT.intro);
+setText("ev-source", EVENT.sourceName);
+setText("option-label", EVENT.optionLabel);
+
+if (EVENT.speaker) {
+  setText("ev-speaker", EVENT.speaker);
+  setText("ev-speaker-title", EVENT.speakerTitle);
+} else {
+  $("ev-speaker-line").remove();
+}
+
+if (EVENT.agenda.length > 0) {
+  EVENT.agenda.forEach(([t, item]) => {
+    const li = document.createElement("li");
+    const b = document.createElement("strong");
+    b.textContent = t;
+    li.append(b, "　" + item);
+    $("ev-agenda").appendChild(li);
+  });
+} else {
+  $("ev-agenda").remove();
+}
+
+EVENT.options.forEach((v) => $("identity").add(new Option(v, v)));
+$("source-link").href = $("source-link-top").href = EVENT.sourceUrl;
+
+// ===== 報名 =====
+const form = $("form"), result = $("result"), button = $("submit");
+
+// 試玩模式：用 localStorage 假裝成後端，回傳格式和 Apps Script 一樣
+const demo = {
+  list() { try { return JSON.parse(localStorage.getItem("demo-signups") || "[]"); } catch { return []; } },
+  status() { const n = this.list().length; return { ok: true, count: n, remaining: EVENT.capacity - n, capacity: EVENT.capacity }; },
+  signup(data) {
+    const list = this.list();
+    if (list.some((r) => r.email === data.email.toLowerCase())) {
+      return { ok: false, message: "這個 Email 已經報名過了", errors: { email: "這個 Email 已經報名過了" } };
+    }
+    list.push({ ...data, email: data.email.toLowerCase(), time: new Date().toISOString() });
+    try { localStorage.setItem("demo-signups", JSON.stringify(list)); } catch {}
+    return { ok: true, message: data.name + "，報名成功！（試玩模式）", remaining: EVENT.capacity - list.length };
+  },
+};
+
+async function loadSeats() {
+  let info;
+  try { info = SCRIPT_URL ? await (await fetch(SCRIPT_URL)).json() : demo.status(); } catch { return; }
+  if (info && info.ok) showSeats(info.remaining, info.capacity);
+}
+function showSeats(remaining, capacity) {
+  setText("seats", remaining);
+  if (capacity) setText("capacity", capacity);
+  if (remaining <= 0) { button.disabled = true; button.textContent = "已額滿"; }
+}
+// 錯誤顯示在欄位旁邊（Bootstrap 的 is-invalid）
+function showError(field, text) {
+  const input = $(field);
+  if (!input) return;
+  input.classList.add("is-invalid");
+  const box = input.parentElement.querySelector(".invalid-feedback");
+  if (!box) return;
+  if (!box.dataset.default) box.dataset.default = box.textContent;
+  box.textContent = text || box.dataset.default;
+}
+function showResult(ok, text) {
+  result.replaceChildren();
+  const div = document.createElement("div");
+  div.className = "alert " + (ok ? "alert-success" : "alert-danger");
+  div.textContent = text;
+  result.appendChild(div);
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  result.replaceChildren();
+  form.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
+
+  // 1. 前端驗證（required、type="email"、maxlength）
+  let ok = true;
+  form.querySelectorAll("[required]").forEach((input) => {
+    if (!input.checkValidity()) { showError(input.id); ok = false; }
+  });
+  if (!ok) return;
+
+  const data = { name: form.name.value.trim(), email: form.email.value.trim(), identity: form.identity.value, agree: form.agree.checked };
+
+  // 2. 送到後端（不要設定 Content-Type，避免 CORS 預檢）
+  button.disabled = true; button.textContent = "送出中…";
+  let res;
+  try {
+    res = SCRIPT_URL ? await (await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(data) })).json() : demo.signup(data);
+  } catch {
+    res = { ok: false, message: "連不到報名系統，請稍後再試或檢查網路", errors: {} };
+  }
+  button.disabled = false; button.textContent = "送出報名";
+
+  // 3. 顯示結果
+  if (res.ok) {
+    showResult(true, "🎉 " + res.message);
+    form.reset();
+    if (typeof res.remaining === "number") showSeats(res.remaining);
+  } else {
+    Object.entries(res.errors || {}).forEach(([field, text]) => showError(field, text));
+    showResult(false, res.message || "報名失敗");
+  }
+});
+
+if (!SCRIPT_URL) $("demo-note").classList.remove("d-none");
+loadSeats();
+</script>
+</body>
+</html>
